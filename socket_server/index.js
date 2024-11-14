@@ -35,11 +35,11 @@ app.get("/", (req, res) => {
 
 // Socket.IO connection
 io.on("connection", (ws) => {
-  console.log("Client connected");
+  console.log("Client connected with id: " + ws.id);
 
   ws.on("message", (data) => {
     console.log("Received: %s", data);
-    ws.send(`Hello, you sent -> ${data}`);
+    ws.emit("message", data);
   });
 
   ws.on("error", (error) => {
