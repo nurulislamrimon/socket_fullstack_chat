@@ -6,7 +6,7 @@ import {
   useLayoutEffect,
   useState,
 } from "react";
-import { getNotificationAccess } from "../utils/notification";
+import { getNotificationAccess, pushNotification } from "../utils/notification";
 import Chat from "./ui/Chat";
 import { SocketContext } from "../providers/SocketProvider";
 
@@ -24,7 +24,11 @@ export default function Chatting() {
     };
 
     // Attach the listener for incoming messages
-    socket?.on("receive-message", handleReceiveMessage);
+    socket?.on("receive-message", (data) => {
+      handleReceiveMessage(data);
+      pushNotification(data.message);
+    });
+
     // Clean up the listener on unmount
     return () => {
       socket?.off("receive-message", handleReceiveMessage);
@@ -41,6 +45,10 @@ export default function Chatting() {
 
     socket?.emit("send-message", { message: value });
   };
+  // validate socket connection
+  if (!socket) {
+    return <div>Socket connection unavailable. Please try again later.</div>;
+  }
 
   return (
     <Chat

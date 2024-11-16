@@ -39,7 +39,7 @@ io.on("connection", (ws) => {
 
   ws.on("send-message", (data) => {
     console.log("Received: %s", data);
-    ws.emit("receive-message", data);
+    io.emit("receive-message", data);
   });
 
   ws.on("error", (error) => {
