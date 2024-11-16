@@ -37,9 +37,9 @@ app.get("/", (req, res) => {
 io.on("connection", (ws) => {
   console.log("Client connected with id: " + ws.id);
 
-  ws.on("message", (data) => {
+  ws.on("send-message", (data) => {
     console.log("Received: %s", data);
-    ws.emit("message", data);
+    ws.emit("receive-message", data);
   });
 
   ws.on("error", (error) => {

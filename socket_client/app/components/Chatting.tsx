@@ -1,21 +1,34 @@
 "use client";
-import { FormEvent, useContext, useEffect, useState } from "react";
+import {
+  FormEvent,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import { getNotificationAccess } from "../utils/notification";
 import Chat from "./ui/Chat";
 import { SocketContext } from "../providers/SocketProvider";
 
 export default function Chatting() {
   const socket = useContext(SocketContext);
-  const [notification, setNotification] = useState<{ message: string }[] | []>(
-    []
-  );
+  const [notification, setNotification] = useState<{ message: string }[]>([]);
+
+  useLayoutEffect(() => {
+    getNotificationAccess();
+  }, []);
 
   useEffect(() => {
-    socket?.on("message", (data) => {
+    const handleReceiveMessage = (data: { message: string }) => {
       setNotification((prev) => [...prev, data]);
-    });
-    // check and get push notification permission
-    getNotificationAccess();
+    };
+
+    // Attach the listener for incoming messages
+    socket?.on("receive-message", handleReceiveMessage);
+    // Clean up the listener on unmount
+    return () => {
+      socket?.off("receive-message", handleReceiveMessage);
+    };
   }, [socket]);
 
   const handleSubmit = (e: FormEvent) => {
@@ -26,7 +39,7 @@ export default function Chatting() {
 
     if (!value) return;
 
-    socket?.emit("message", { message: value });
+    socket?.emit("send-message", { message: value });
   };
 
   return (
