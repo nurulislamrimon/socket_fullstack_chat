@@ -47,13 +47,14 @@ io.on("connection", (ws) => {
     }
   });
 
-  ws.on("join-room", (data) => {
+  ws.on("join-room", (data, cb) => {
     if (!data) {
       console.error("Invalid room name");
       return;
     }
     console.log("Joining room:", data);
     ws.join(data);
+    cb(`Joind to the room: ${data}`);
   });
 
   ws.on("broadcast-message", (data) => {

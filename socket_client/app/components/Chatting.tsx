@@ -61,7 +61,7 @@ export default function Chatting() {
 
   // handle add to a room
   const handleJoin = (room: string) => {
-    socket?.emit("join-room", room);
+    socket?.emit("join-room", room, (message: string) => alert(message));
   };
   // handle broadcasting
   const handleBroacastSubmit = (e: FormEvent) => {
