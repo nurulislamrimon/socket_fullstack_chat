@@ -37,9 +37,15 @@ app.get("/", (req, res) => {
 io.on("connection", (ws) => {
   console.log("Client connected with id: " + ws.id);
 
-  ws.on("send-message", (data) => {
-    console.log("Received: %s", data);
-    io.emit("receive-message", data);
+  ws.on("send-message", (data, room) => {
+    if (!room) {
+      console.log("Received: %s", data);
+      io.emit("receive-message", data);
+    } else {
+      console.log(room);
+
+      ws.to(room).emit("receive-message", data);
+    }
   });
 
   ws.on("broadcast-message", (data) => {

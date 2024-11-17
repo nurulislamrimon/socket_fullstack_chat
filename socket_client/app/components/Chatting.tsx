@@ -45,12 +45,14 @@ export default function Chatting() {
   const handleChatSubmit = (e: FormEvent) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
-    const value = (form.elements.namedItem("chat-input") as HTMLInputElement)
+    const message = (form.elements.namedItem("chat-input") as HTMLInputElement)
+      .value;
+    const room = (form.elements.namedItem("room-input") as HTMLInputElement)
       .value;
 
-    if (!value) return;
+    if (!message) return;
 
-    socket?.emit("send-message", { message: value });
+    socket?.emit("send-message", { message: message }, room);
   };
   // handle broadcasting
   const handleBroacastSubmit = (e: FormEvent) => {

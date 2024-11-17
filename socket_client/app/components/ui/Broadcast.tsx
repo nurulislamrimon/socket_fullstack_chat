@@ -7,9 +7,14 @@ const Broadcast = ({
 }) => {
   return (
     <div className="flex flex-col items-center">
-      <p> Broadcast</p>
+      <p className="font-bold mt-5"> Broadcast</p>
       <form onSubmit={handleSubmit}>
-        <input type="text" name="chat-input" className="border px-2 py-1" />
+        <input
+          type="text"
+          name="chat-input"
+          placeholder="Your message here"
+          className="border px-2 py-1"
+        />
         <button className="border px-2 py-1">Submit</button>
       </form>
     </div>
