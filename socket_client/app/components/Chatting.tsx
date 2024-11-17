@@ -6,9 +6,11 @@ import {
   useLayoutEffect,
   useState,
 } from "react";
-import { getNotificationAccess, pushNotification } from "../utils/notification";
+import { getNotificationAccess } from "../utils/notification";
 import Chat from "./ui/Chat";
 import { SocketContext } from "../providers/SocketProvider";
+import Broadcast from "./ui/Broadcast";
+import Display from "./ui/Display";
 
 export default function Chatting() {
   const socket = useContext(SocketContext);
@@ -26,16 +28,21 @@ export default function Chatting() {
     // Attach the listener for incoming messages
     socket?.on("receive-message", (data) => {
       handleReceiveMessage(data);
-      pushNotification(data.message);
+      // pushNotification(data.message);
+    });
+    socket?.on("broadcast-message", (data) => {
+      handleReceiveMessage(data);
+      // pushNotification(data.message);
     });
 
     // Clean up the listener on unmount
     return () => {
       socket?.off("receive-message", handleReceiveMessage);
+      socket?.off("broadcast-message", handleReceiveMessage);
     };
   }, [socket]);
-
-  const handleSubmit = (e: FormEvent) => {
+  // handle chatting
+  const handleChatSubmit = (e: FormEvent) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const value = (form.elements.namedItem("chat-input") as HTMLInputElement)
@@ -45,16 +52,27 @@ export default function Chatting() {
 
     socket?.emit("send-message", { message: value });
   };
+  // handle broadcasting
+  const handleBroacastSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const value = (form.elements.namedItem("chat-input") as HTMLInputElement)
+      .value;
+
+    if (!value) return;
+
+    socket?.emit("broadcast-message", { message: value });
+  };
   // validate socket connection
   if (!socket) {
     return <div>Socket connection unavailable. Please try again later.</div>;
   }
 
   return (
-    <Chat
-      id={socket?.id}
-      handleSubmit={handleSubmit}
-      notification={notification}
-    />
+    <>
+      <Chat id={socket?.id} handleSubmit={handleChatSubmit} />
+      <Broadcast handleSubmit={handleBroacastSubmit} />
+      <Display notification={notification} />
+    </>
   );
 }

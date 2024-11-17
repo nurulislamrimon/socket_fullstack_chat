@@ -42,6 +42,11 @@ io.on("connection", (ws) => {
     io.emit("receive-message", data);
   });
 
+  ws.on("broadcast-message", (data) => {
+    console.log("Received: %s", data);
+    ws.broadcast.emit("broadcast-message", data);
+  });
+
   ws.on("error", (error) => {
     console.log("Error: %s", error);
   });
