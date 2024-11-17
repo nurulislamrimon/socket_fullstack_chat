@@ -40,12 +40,20 @@ io.on("connection", (ws) => {
   ws.on("send-message", (data, room) => {
     if (!room) {
       console.log("Received: %s", data);
-      io.emit("receive-message", data);
+      io.emit("receive-message", data); // Broadcast to all clients
     } else {
-      console.log(room);
-
-      ws.to(room).emit("receive-message", data);
+      console.log(`Sending message to room ${room}: ${data}`);
+      io.to(room).emit("receive-message", data); // Emit to specific room
     }
+  });
+
+  ws.on("join-room", (data) => {
+    if (!data) {
+      console.error("Invalid room name");
+      return;
+    }
+    console.log("Joining room:", data);
+    ws.join(data);
   });
 
   ws.on("broadcast-message", (data) => {

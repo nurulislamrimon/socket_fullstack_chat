@@ -41,6 +41,10 @@ export default function Chatting() {
       socket?.off("broadcast-message", handleReceiveMessage);
     };
   }, [socket]);
+  // validate socket connection
+  if (!socket) {
+    return <div>Socket connection unavailable. Please try again later.</div>;
+  }
   // handle chatting
   const handleChatSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -54,6 +58,11 @@ export default function Chatting() {
 
     socket?.emit("send-message", { message: message }, room);
   };
+
+  // handle add to a room
+  const handleJoin = (room: string) => {
+    socket?.emit("join-room", room);
+  };
   // handle broadcasting
   const handleBroacastSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -65,14 +74,14 @@ export default function Chatting() {
 
     socket?.emit("broadcast-message", { message: value });
   };
-  // validate socket connection
-  if (!socket) {
-    return <div>Socket connection unavailable. Please try again later.</div>;
-  }
 
   return (
     <>
-      <Chat id={socket?.id} handleSubmit={handleChatSubmit} />
+      <Chat
+        id={socket?.id}
+        handleSubmit={handleChatSubmit}
+        handleJoin={handleJoin}
+      />
       <Broadcast handleSubmit={handleBroacastSubmit} />
       <Display notification={notification} />
     </>
