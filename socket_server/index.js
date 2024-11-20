@@ -17,6 +17,9 @@ const io = socketIO(server, {
   },
 });
 
+// namespace socket.io
+const nspaceSocket = io.of("/my-namespace");
+
 // Port
 const port = 5000;
 
@@ -74,12 +77,26 @@ io.on("connection", (ws) => {
 });
 
 // namespace of socket.io
-io.of("/my-namespace").on("connection", (socket) => {
-  console.log("Client connected to namespace");
+nspaceSocket.on("connection", (socket) => {
+  console.log("Client connected to namespace", socket.username);
   socket.on("send-message", (data) => {
     console.log("Received: %s", data);
-    socket.broadcast.emit("receive-message", data); // Emit to all clients except the sender
+    socket.broadcast.emit("receive-message", data);
   });
+});
+
+// handle authentication based access using middleware in the namespace
+nspaceSocket.use((socket, next) => {
+  const token = socket.handshake.auth.token;
+  if (token === "my-secret-token") {
+    next();
+  } else {
+    next(new Error("Authentication error"));
+  }
+});
+
+nspaceSocket.on("connect_error", (err) => {
+  console.log(`connect_error due to ${err.message}`);
 });
 
 // Server listener

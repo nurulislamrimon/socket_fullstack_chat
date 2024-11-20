@@ -12,7 +12,9 @@ const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [nspaceSocket, setNspaceSocket] = useState<null | Socket>(null);
   useEffect(() => {
     const socketIO = io("http://localhost:5000");
-    const namespaceIO = io("http://localhost:5000/my-namespace");
+    const namespaceIO = io("http://localhost:5000/my-namespace", {
+      auth: { token: "my-secret-token" },
+    });
 
     socketIO.on("connect", () => {
       setSocket(socketIO);
