@@ -73,6 +73,15 @@ io.on("connection", (ws) => {
   ws.send("Hi there, I am a WebSocket server");
 });
 
+// namespace of socket.io
+io.of("/my-namespace").on("connection", (socket) => {
+  console.log("Client connected to namespace");
+  socket.on("send-message", (data) => {
+    console.log("Received: %s", data);
+    socket.broadcast.emit("receive-message", data); // Emit to all clients except the sender
+  });
+});
+
 // Server listener
 server.listen(port, () => {
   console.log(`Server listening on port ${port}`);

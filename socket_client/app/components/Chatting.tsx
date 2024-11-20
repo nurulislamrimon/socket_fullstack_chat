@@ -13,7 +13,8 @@ import Broadcast from "./ui/Broadcast";
 import Display from "./ui/Display";
 
 export default function Chatting() {
-  const socket = useContext(SocketContext);
+  const socket = useContext(SocketContext)?.socket;
+  const nspaceSocket = useContext(SocketContext)?.nspaceSocket;
   const [notification, setNotification] = useState<{ message: string }[]>([]);
 
   useLayoutEffect(() => {
@@ -41,6 +42,10 @@ export default function Chatting() {
       socket?.off("broadcast-message", handleReceiveMessage);
     };
   }, [socket]);
+  // namespace socket.io
+  useEffect(() => {
+    console.log("namespace socket.io ", nspaceSocket);
+  }, [nspaceSocket]);
   // validate socket connection
   if (!socket) {
     return <div>Socket connection unavailable. Please try again later.</div>;
